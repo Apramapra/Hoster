@@ -1,0 +1,6 @@
+[2026-01-13 20:30:06.407434] Starting bot: My_Bot
+[2026-01-13 20:30:06.407434] Python executable: C:\Program Files\Python38\python.exe
+[2026-01-13 20:30:06.407434] Working directory: F:\Bot Hoster\bots\My_Bot
+[2026-01-13 20:30:06.407434] Using script: Mail_Devloper.py
+[2026-01-13 20:30:06.407434] Running command: C:\Program Files\Python38\python.exe Mail_Devloper.py
+[2026-01-13 20:49:06.928668] Bot process ended with code: 3221225786

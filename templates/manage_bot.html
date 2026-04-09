@@ -1,0 +1,465 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage {{ bot_id }} - Ultimate Bot Hosting</title>
+    <style>
+        /* (Keep all existing styles from your manage_bot.html) */
+        /* Add a few new ones for the editor and terminal */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        header { background: #2d3748; color: white; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .logo { font-size: 24px; font-weight: bold; }
+        .bot-title { font-size: 20px; color: #a0aec0; }
+        .status-indicator { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-left: 10px; }
+        .status-running { background: #c6f6d5; color: #22543d; }
+        .status-stopped { background: #fed7d7; color: #742a2a; }
+        .main-content { display: grid; grid-template-columns: 300px 1fr; min-height: 600px; }
+        .sidebar { background: #f7fafc; border-right: 1px solid #e2e8f0; padding: 24px; overflow-y: auto; max-height: 800px; }
+        .content { padding: 24px; }
+        .btn { display: inline-flex; align-items: center; padding: 10px 20px; background: #4299e1; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; transition: all 0.3s; border: none; cursor: pointer; width: 100%; justify-content: center; margin-bottom: 12px; }
+        .btn:hover { background: #3182ce; transform: translateY(-1px); }
+        .btn-success { background: #48bb78; }
+        .btn-success:hover { background: #38a169; }
+        .btn-danger { background: #f56565; }
+        .btn-danger:hover { background: #e53e3e; }
+        .file-list { margin-top: 20px; max-height: 400px; overflow-y: auto; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 8px; cursor: pointer; transition: all 0.3s; }
+        .file-item:hover { background: #ebf8ff; border-color: #4299e1; }
+        .file-item.active { background: #bee3f8; border-color: #4299e1; }
+        .file-name { color: #2d3748; }
+        .file-size { color: #718096; font-size: 12px; }
+        .log-container { background: #1a202c; color: #cbd5e0; font-family: 'Monaco', 'Menlo', monospace; padding: 20px; border-radius: 8px; height: 500px; overflow-y: auto; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+        .log-line { margin-bottom: 4px; border-left: 3px solid transparent; padding-left: 10px; }
+        .log-line.error { border-left-color: #f56565; color: #feb2b2; }
+        .log-line.info { border-left-color: #4299e1; }
+        .log-line.success { border-left-color: #48bb78; }
+        .controls { display: flex; gap: 12px; margin-bottom: 20px; }
+        .controls .btn { width: auto; min-width: 120px; }
+        .info-box { background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 6px; padding: 16px; margin-bottom: 20px; color: #22543d; }
+        .info-box.error { background: #fff5f5; border-color: #fed7d7; color: #742a2a; }
+        .info-box strong { display: block; margin-bottom: 8px; }
+        .tab-navigation { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { padding: 12px 24px; cursor: pointer; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab:hover { color: #4299e1; }
+        .tab.active { color: #4299e1; border-bottom-color: #4299e1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .file-content { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; font-family: 'Monaco', 'Menlo', monospace; white-space: pre-wrap; word-wrap: break-word; max-height: 400px; overflow-y: auto; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; background: #48bb78; color: white; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateX(150%); transition: transform 0.3s; z-index: 1000; }
+        .notification.show { transform: translateX(0); }
+        .notification.error { background: #f56565; }
+        .log-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .log-refresh { background: #2d3748; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .log-refresh:hover { background: #4a5568; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinner { animation: spin 1s linear infinite; display: inline-block; }
+        .auto-refresh { display: flex; align-items: center; gap: 8px; color: #718096; font-size: 14px; }
+        /* New styles for editor, terminal, test */
+        .editor-area { display: flex; flex-direction: column; gap: 10px; }
+        .editor-textarea { width: 100%; min-height: 400px; font-family: monospace; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; resize: vertical; }
+        .terminal-output { background: #1a202c; color: #cbd5e0; font-family: monospace; padding: 15px; border-radius: 6px; height: 350px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 10px; }
+        .command-input { display: flex; gap: 10px; }
+        .command-input input { flex: 1; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: monospace; }
+        .command-input button { padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .test-output { background: #1a202c; color: #cbd5e0; font-family: monospace; padding: 15px; border-radius: 6px; height: 200px; overflow-y: auto; white-space: pre-wrap; margin-top: 10px; }
+        .package-install { display: flex; gap: 10px; margin-top: 20px; }
+        .package-install input { flex: 1; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; }
+        .btn-small { width: auto; padding: 8px 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <a href="/" style="color: white; text-decoration: none;" class="logo">← Back</a>
+                <div class="bot-title">Bot: {{ bot_id }}</div>
+                <div id="statusIndicator" class="status-indicator status-stopped">Loading...</div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <button id="startBtn" class="btn btn-success" onclick="startBot()">▶ Start Bot</button>
+                <button id="stopBtn" class="btn btn-danger" onclick="stopBot()" disabled>⏹ Stop Bot</button>
+
+                <div class="file-list" id="fileList">
+                    <!-- Files loaded via JS -->
+                </div>
+
+                <!-- Package installer -->
+                <div style="margin-top: 20px;">
+                    <input type="text" id="packageName" placeholder="Package name (e.g. requests)" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
+                    <button class="btn btn-small" onclick="installPackage()" style="width: 100%;">📦 Install Package</button>
+                </div>
+
+                <button class="btn" onclick="deleteBot()" style="margin-top: 20px; background: #718096;">🗑 Delete Bot</button>
+            </div>
+
+            <div class="content">
+                <div class="tab-navigation">
+                    <div class="tab active" onclick="switchTab('logs')">Live Logs</div>
+                    <div class="tab" onclick="switchTab('editor')">File Editor</div>
+                    <div class="tab" onclick="switchTab('terminal')">Terminal</div>
+                    <div class="tab" onclick="switchTab('test')">Live Test</div>
+                    <div class="tab" onclick="switchTab('info')">Bot Info</div>
+                </div>
+
+                <!-- Logs Tab -->
+                <div id="logsTab" class="tab-content active">
+                    <div class="log-controls">
+                        <button class="log-refresh" onclick="refreshLogs()">
+                            <span id="refreshText">⟳ Refresh Logs</span>
+                            <span id="refreshSpinner" class="spinner" style="display: none;">⟳</span>
+                        </button>
+                        <div class="auto-refresh">
+                            <input type="checkbox" id="autoRefresh" checked>
+                            <label for="autoRefresh">Auto-refresh (5s)</label>
+                        </div>
+                    </div>
+                    <div class="log-container" id="logContainer">Loading logs...</div>
+                </div>
+
+                <!-- File Editor Tab -->
+                <div id="editorTab" class="tab-content">
+                    <div class="editor-area">
+                        <h3>Editing: <span id="currentFile">(select a file)</span></h3>
+                        <textarea id="fileEditor" class="editor-textarea" placeholder="Select a file from the sidebar to edit..." disabled></textarea>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="saveFileBtn" class="btn btn-small" onclick="saveCurrentFile()" disabled>💾 Save</button>
+                            <button class="btn btn-small btn-secondary" onclick="refreshFileList()">⟳ Refresh List</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Tab -->
+                <div id="terminalTab" class="tab-content">
+                    <div class="terminal-output" id="terminalOutput">Welcome to the web terminal. Type a command below.</div>
+                    <div class="command-input">
+                        <input type="text" id="commandInput" placeholder="e.g. ls -la" onkeypress="if(event.key==='Enter') runCommand()">
+                        <button onclick="runCommand()">Run</button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-small" onclick="clearTerminal()">Clear Output</button>
+                    </div>
+                </div>
+
+                <!-- Live Test Tab -->
+                <div id="testTab" class="tab-content">
+                    <h3>Python Live Tester</h3>
+                    <textarea id="testCode" class="editor-textarea" placeholder="# Write Python code here\nprint('Hello, world!')" style="min-height: 200px;">print('Hello, world!')</textarea>
+                    <div style="display: flex; gap: 10px; margin: 10px 0;">
+                        <button class="btn btn-small" onclick="runTestCode()">▶ Run Code</button>
+                        <button class="btn btn-small btn-secondary" onclick="clearTestOutput()">Clear Output</button>
+                    </div>
+                    <div class="test-output" id="testOutput">Output will appear here...</div>
+                </div>
+
+                <!-- Info Tab -->
+                <div id="infoTab" class="tab-content">
+                    <div class="info-box" id="infoBox">Loading bot information...</div>
+                    <div id="botDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        const botId = '{{ bot_id }}';
+        let autoRefreshInterval;
+        let currentFile = null;
+
+        // ---------- UI Helpers ----------
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+
+        // ---------- Bot Control ----------
+        async function updateStatus() {
+            try {
+                const response = await fetch(`/bot/${botId}/status`);
+                const data = await response.json();
+                const statusIndicator = document.getElementById('statusIndicator');
+                const startBtn = document.getElementById('startBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                if (data.status === 'running') {
+                    statusIndicator.className = 'status-indicator status-running';
+                    statusIndicator.textContent = 'RUNNING';
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                } else {
+                    statusIndicator.className = 'status-indicator status-stopped';
+                    statusIndicator.textContent = 'STOPPED';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+            } catch (e) { console.error('Status error', e); }
+        }
+
+        async function startBot() {
+            try {
+                const res = await fetch(`/bot/${botId}/start`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) { showNotification('Bot started'); updateStatus(); }
+                else showNotification(data.error || 'Start failed', 'error');
+            } catch (e) { showNotification('Error: ' + e.message, 'error'); }
+        }
+
+        async function stopBot() {
+            try {
+                const res = await fetch(`/bot/${botId}/stop`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) { showNotification('Bot stopped'); updateStatus(); }
+                else showNotification(data.error || 'Stop failed', 'error');
+            } catch (e) { showNotification('Error: ' + e.message, 'error'); }
+        }
+
+        async function deleteBot() {
+            if (!confirm('Delete this bot forever?')) return;
+            try {
+                const res = await fetch(`/bot/${botId}/delete`, { method: 'POST' });
+                if (res.ok) { showNotification('Bot deleted'); setTimeout(() => window.location.href = '/', 1000); }
+                else { const data = await res.json(); showNotification(data.error || 'Delete failed', 'error'); }
+            } catch (e) { showNotification('Error: ' + e.message, 'error'); }
+        }
+
+        // ---------- File Management ----------
+        async function loadFiles() {
+            try {
+                const res = await fetch(`/bot/${botId}/files`);
+                const data = await res.json();
+                let html = '<div style="color: #718096; margin-bottom: 12px;">Bot Files:</div>';
+                data.files.forEach(f => {
+                    html += `<div class="file-item" onclick="selectFile('${f.name}')">
+                        <div class="file-name">${f.name}</div>
+                        <div class="file-size">${formatFileSize(f.size)}</div>
+                    </div>`;
+                });
+                document.getElementById('fileList').innerHTML = html;
+            } catch (e) { console.error('Load files error', e); }
+        }
+
+        async function selectFile(filename) {
+            // Highlight
+            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            currentFile = filename;
+            document.getElementById('currentFile').textContent = filename;
+            document.getElementById('fileEditor').disabled = false;
+            document.getElementById('saveFileBtn').disabled = false;
+
+            try {
+                const res = await fetch(`/bot/${botId}/view/${filename}`);
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('fileEditor').value = data.content;
+                } else {
+                    showNotification('Error loading file: ' + data.error, 'error');
+                }
+            } catch (e) {
+                showNotification('Failed to load file', 'error');
+            }
+        }
+
+        async function saveCurrentFile() {
+            if (!currentFile) return;
+            const content = document.getElementById('fileEditor').value;
+            try {
+                const res = await fetch(`/bot/${botId}/file/${currentFile}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showNotification('File saved');
+                } else {
+                    showNotification(data.error || 'Save failed', 'error');
+                }
+            } catch (e) {
+                showNotification('Error: ' + e.message, 'error');
+            }
+        }
+
+        function refreshFileList() {
+            loadFiles();
+        }
+
+        // ---------- Terminal ----------
+        async function runCommand() {
+            const input = document.getElementById('commandInput');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            const termOut = document.getElementById('terminalOutput');
+            termOut.innerHTML += `\n$ ${cmd}`;
+
+            try {
+                const res = await fetch(`/bot/${botId}/terminal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.stdout) termOut.innerHTML += `\n${data.stdout}`;
+                    if (data.stderr) termOut.innerHTML += `\n<span style="color: #f56565;">${data.stderr}</span>`;
+                    termOut.innerHTML += `\n[return code: ${data.returncode}]`;
+                } else {
+                    termOut.innerHTML += `\n<span style="color: #f56565;">Error: ${data.error}</span>`;
+                }
+            } catch (e) {
+                termOut.innerHTML += `\n<span style="color: #f56565;">Request failed: ${e.message}</span>`;
+            }
+            termOut.scrollTop = termOut.scrollHeight;
+            input.value = '';
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalOutput').innerHTML = 'Welcome to the web terminal. Type a command below.';
+        }
+
+        // ---------- Live Test ----------
+        async function runTestCode() {
+            const code = document.getElementById('testCode').value;
+            const outDiv = document.getElementById('testOutput');
+            outDiv.innerHTML = 'Running...';
+            try {
+                const res = await fetch(`/bot/${botId}/execute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    outDiv.innerHTML = '';
+                    if (data.stdout) outDiv.innerHTML += data.stdout;
+                    if (data.stderr) outDiv.innerHTML += `<span style="color: #f56565;">${data.stderr}</span>`;
+                    outDiv.innerHTML += `\n[exit code: ${data.returncode}]`;
+                } else {
+                    outDiv.innerHTML = `<span style="color: #f56565;">Error: ${data.error}</span>`;
+                }
+            } catch (e) {
+                outDiv.innerHTML = `<span style="color: #f56565;">Request failed: ${e.message}</span>`;
+            }
+        }
+
+        function clearTestOutput() {
+            document.getElementById('testOutput').innerHTML = 'Output will appear here...';
+        }
+
+        // ---------- Package Installer ----------
+        async function installPackage() {
+            const pkg = document.getElementById('packageName').value.trim();
+            if (!pkg) { showNotification('Enter package name', 'error'); return; }
+            try {
+                const res = await fetch(`/bot/${botId}/install`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ package: pkg })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showNotification(`Installed ${pkg}`);
+                    // Show output in terminal tab maybe? For simplicity, just notification.
+                } else {
+                    showNotification(data.error || 'Install failed', 'error');
+                }
+            } catch (e) {
+                showNotification('Error: ' + e.message, 'error');
+            }
+        }
+
+        // ---------- Logs ----------
+        async function refreshLogs() {
+            const refreshText = document.getElementById('refreshText');
+            const refreshSpinner = document.getElementById('refreshSpinner');
+            refreshText.style.display = 'none';
+            refreshSpinner.style.display = 'inline-block';
+            try {
+                const res = await fetch(`/bot/${botId}/logs`);
+                const data = await res.json();
+                const logContainer = document.getElementById('logContainer');
+                logContainer.innerHTML = '';
+                data.logs.forEach(line => {
+                    const div = document.createElement('div');
+                    div.className = 'log-line';
+                    if (line.includes('ERROR') || line.includes('Error')) div.classList.add('error');
+                    else if (line.includes('INFO')) div.classList.add('info');
+                    else if (line.includes('SUCCESS')) div.classList.add('success');
+                    div.textContent = line;
+                    logContainer.appendChild(div);
+                });
+                logContainer.scrollTop = logContainer.scrollHeight;
+                updateStatus(); // also update status from logs endpoint
+            } catch (e) { console.error('Logs error', e); }
+            finally {
+                refreshText.style.display = 'inline-block';
+                refreshSpinner.style.display = 'none';
+            }
+        }
+
+        function setupAutoRefresh() {
+            const cb = document.getElementById('autoRefresh');
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            if (cb.checked) autoRefreshInterval = setInterval(refreshLogs, 5000);
+            cb.addEventListener('change', () => {
+                if (cb.checked) autoRefreshInterval = setInterval(refreshLogs, 5000);
+                else clearInterval(autoRefreshInterval);
+            });
+        }
+
+        // ---------- Tab Switching ----------
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            if (tabName === 'info') loadBotInfo();
+            if (tabName === 'editor') loadFiles(); // refresh file list
+        }
+
+        async function loadBotInfo() {
+            try {
+                const res = await fetch(`/bot/${botId}/status`);
+                const data = await res.json();
+                let html = `<strong>🤖 Bot Information</strong><p>Status: <strong>${data.status.toUpperCase()}</strong></p>`;
+                html += `<p>Files: ${data.files.length}</p>`;
+                document.getElementById('infoBox').innerHTML = html;
+                let filesHtml = '<div><strong>📁 Files:</strong><br>';
+                data.files.forEach(f => filesHtml += `<div style="font-family: monospace;">${f}</div>`);
+                filesHtml += '</div>';
+                document.getElementById('botDetails').innerHTML = filesHtml;
+            } catch (e) { console.error('Info error', e); }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            return (bytes/(1024*1024)).toFixed(1) + ' MB';
+        }
+
+        // ---------- Initialise ----------
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus();
+            loadFiles();
+            refreshLogs();
+            setupAutoRefresh();
+            setInterval(updateStatus, 10000);
+        });
+    </script>
+</body>
+</html>

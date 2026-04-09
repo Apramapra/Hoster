@@ -1,0 +1,75 @@
+[2026-01-13 20:39:43.522443] Starting bot: BG_Remover_Bot
+[2026-01-13 20:39:43.522443] Python executable: C:\Program Files\Python38\python.exe
+[2026-01-13 20:39:43.522443] Working directory: F:\Bot Hoster\bots\BG_Remover_Bot
+[2026-01-13 20:39:43.522443] Using script: RemoveBG.py
+[2026-01-13 20:39:43.523443] Running command: C:\Program Files\Python38\python.exe RemoveBG.py
+[2026-01-13 20:41:56] No error handlers are registered, logging exception.
+[2026-01-13 20:41:56] Traceback (most recent call last):
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+[2026-01-13 20:41:56]     yield
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+[2026-01-13 20:41:56]     resp = await self._pool.handle_async_request(req)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\connection_pool.py", line 256, in handle_async_request
+[2026-01-13 20:41:56]     raise exc from None
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\connection_pool.py", line 236, in handle_async_request
+[2026-01-13 20:41:56]     response = await connection.handle_async_request(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\connection.py", line 103, in handle_async_request
+[2026-01-13 20:41:56]     return await self._connection.handle_async_request(request)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\http11.py", line 136, in handle_async_request
+[2026-01-13 20:41:56]     raise exc
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\http11.py", line 106, in handle_async_request
+[2026-01-13 20:41:56]     ) = await self._receive_response_headers(**kwargs)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\http11.py", line 177, in _receive_response_headers
+[2026-01-13 20:41:56]     event = await self._receive_event(timeout=timeout)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_async\http11.py", line 217, in _receive_event
+[2026-01-13 20:41:56]     data = await self._network_stream.read(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_backends\anyio.py", line 37, in read
+[2026-01-13 20:41:56]     return b""
+[2026-01-13 20:41:56]   File "C:\Program Files\Python38\lib\contextlib.py", line 131, in __exit__
+[2026-01-13 20:41:56]     self.gen.throw(type, value, traceback)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+[2026-01-13 20:41:56]     raise to_exc(exc) from exc
+[2026-01-13 20:41:56] httpcore.ReadTimeout
+[2026-01-13 20:41:56] 
+[2026-01-13 20:41:56] The above exception was the direct cause of the following exception:
+[2026-01-13 20:41:56] 
+[2026-01-13 20:41:56] Traceback (most recent call last):
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\request\_httpxrequest.py", line 292, in do_request
+[2026-01-13 20:41:56]     res = await self._client.request(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_client.py", line 1540, in request
+[2026-01-13 20:41:56]     return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_client.py", line 1629, in send
+[2026-01-13 20:41:56]     response = await self._send_handling_auth(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+[2026-01-13 20:41:56]     response = await self._send_handling_redirects(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+[2026-01-13 20:41:56]     response = await self._send_single_request(request)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_client.py", line 1730, in _send_single_request
+[2026-01-13 20:41:56]     response = await transport.handle_async_request(request)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_transports\default.py", line 394, in handle_async_request
+[2026-01-13 20:41:56]     resp = await self._pool.handle_async_request(req)
+[2026-01-13 20:41:56]   File "C:\Program Files\Python38\lib\contextlib.py", line 131, in __exit__
+[2026-01-13 20:41:56]     self.gen.throw(type, value, traceback)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+[2026-01-13 20:41:56]     raise mapped_exc(message) from exc
+[2026-01-13 20:41:56] httpx.ReadTimeout
+[2026-01-13 20:41:56] 
+[2026-01-13 20:41:56] The above exception was the direct cause of the following exception:
+[2026-01-13 20:41:56] 
+[2026-01-13 20:41:56] Traceback (most recent call last):
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\ext\_application.py", line 1335, in process_update
+[2026-01-13 20:41:56]     await coroutine
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\ext\_handlers\basehandler.py", line 158, in handle_update
+[2026-01-13 20:41:56]     return await self.callback(update, context)
+[2026-01-13 20:41:56]   File "RemoveBG.py", line 71, in handle_photo
+[2026-01-13 20:41:56]     await file.download_to_drive(image_path)
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\_files\file.py", line 206, in download_to_drive
+[2026-01-13 20:41:56]     buf = await self.get_bot().request.retrieve(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\request\_baserequest.py", line 253, in retrieve
+[2026-01-13 20:41:56]     return await self._request_wrapper(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\request\_baserequest.py", line 333, in _request_wrapper
+[2026-01-13 20:41:56]     code, payload = await self.do_request(
+[2026-01-13 20:41:56]   File "C:\Users\pc\AppData\Roaming\Python\Python38\site-packages\telegram\request\_httpxrequest.py", line 309, in do_request
+[2026-01-13 20:41:56]     raise TimedOut from err
+[2026-01-13 20:41:56] telegram.error.TimedOut: Timed out
+[2026-01-13 20:49:08.878779] Bot process ended with code: 3221225786
